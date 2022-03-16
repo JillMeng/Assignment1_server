@@ -51,36 +51,20 @@ public class SkierServlet extends HttpServlet {
         Gson gson = new Gson();
         String urlPath = req.getPathInfo();
         try {
-//            ResponseCode responseCode = new ResponseCode();
             // check we have a URL!
             if (urlPath == null || urlPath.isEmpty()) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//                responseCode.setSuccess(false);
-//                responseCode.setDescription("Missing URL");
             }
             String[] urlParts = urlPath.split("/");
-            // and now validate url path and return the response status code
-            // (and maybe also some value if input is valid)
 
             if (!isUrlValid(urlParts)) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//                responseCode.setSuccess(false);
-//                responseCode.setDescription("Server is not found.");
             } else {
                 res.setStatus(HttpServletResponse.SC_OK);
-//                responseCode.setSuccess(true);
-//                responseCode.setDescription("Server is connected");
             }
-//            res.getOutputStream().print(gson.toJson(responseCode));
-//            res.getOutputStream().flush();
         } catch (Exception e) {
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
-//            ResponseCode responseCode = new ResponseCode();
-//            responseCode.setSuccess(false);
-//            responseCode.setDescription(e.getMessage());
-//            res.getOutputStream().print(gson.toJson(responseCode));
-//            res.getOutputStream().flush();
         }
 
     }
@@ -92,58 +76,35 @@ public class SkierServlet extends HttpServlet {
         String urlPath = req.getPathInfo();
 
         try {
-//            ResponseCode responseCode = new ResponseCode();
-            // check we have a valid postBody
+            // check we have a valid postBody as the URL
             if (urlPath == null || urlPath.isEmpty()) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//                responseCode.setSuccess(false);
-//                responseCode.setDescript4ion("Missing Parameter");
             }
             String[] urlParts = urlPath.split("/");
 
             if (!isUrlValid(urlParts)) {
                 res.setStatus(HttpServletResponse.SC_NOT_FOUND);
-//                responseCode.setSuccess(false);
-//                responseCode.setDescription("Url is not valid");
             } else {
                 res.setStatus(HttpServletResponse.SC_CREATED);
-//                res.setStatus(HttpServletResponse.SC_OK);
                 //extract request body
                 LiftRide body = gson.fromJson(req.getReader(), LiftRide.class);
                 //wrap to message
-                //'{"liftID":7,"time":326,"waitTime":9}'
-//                StringBuilder sb = new StringBuilder();
-//                sb.append("liftID:").append(body.getLiftID()).append(",")
-//                        .append("time:").append(body.getTime()).append(",")
-//                        .append("waitTime:").append(body.getWaitTime());
                 JSONObject jsonObject = new JSONObject(body);
-//                String msg = jsonObject.toString();
                 Channel pooledChannel = pool.borrowObject();
                 pooledChannel.queueDeclare(QUEUE_NAME, true, false, false, null);
                 pooledChannel.basicPublish("", QUEUE_NAME, null, jsonObject.toString().getBytes(StandardCharsets.UTF_8));
                 System.out.println(" [x] Sent '" + jsonObject + "'");
                 pool.returnObject(pooledChannel);
-//                responseCode.setSuccess(true);
-//                responseCode.setDescription("Post is successful");
             }
-//            res.getOutputStream().print(gson.toJson(responseCode));
-//            res.getOutputStream().flush();
         } catch (Exception e) {
             res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             e.printStackTrace();
-//            ResponseCode responseCode = new ResponseCode();
-//            responseCode.setSuccess(false);
-//            responseCode.setDescription(e.getMessage());
-//            res.getOutputStream().print(gson.toJson(responseCode));
-//            res.getOutputStream().flush();
         }
 
     }
 
     private boolean isUrlValid(String[] urlPath) {
         // TODO: validate the request url path according to the API spec
-        // urlPath  = "/1/seasons/2019/day/1/skier/123"
-        // urlParts = [, 1, seasons, 2019, day, 1, skier, 123]
 //        /skiers/{resortID}/seasons/{seasonID}/days/{dayID}/skiers/{skierID}
         if(urlPath.length == 8) {
             for(int i=1; i<8; i+=2) {

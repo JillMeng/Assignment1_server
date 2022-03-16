@@ -28,14 +28,6 @@ public class ChannelFactory
     public PooledObject<Channel> wrap(Channel channel) {
         return new DefaultPooledObject<Channel>(channel);
     }
-//
-//    /**
-//     * When an object is returned to the pool, clear the buffer.
-//     */
-//    @Override
-//    public void passivateObject(PooledObject<Channel> pooledObject) {
-//        pooledObject.getObject().setLength(0);
-//    }
 
     @Override
     public void destroyObject(PooledObject<Channel> p, DestroyMode destroyMode) throws Exception {

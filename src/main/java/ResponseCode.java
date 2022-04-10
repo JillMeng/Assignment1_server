@@ -2,6 +2,7 @@ public class ResponseCode {
     private boolean success;
     private String description;
 
+
     public boolean isSuccess() {
         return success;
     }
